@@ -1,0 +1,11 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:data="http://data.gbd.chdb.scb.kz/">
+    <soapenv:Header>
+        <userId>{USER_ID}</userId>
+    </soapenv:Header>
+    <soapenv:Body>
+        <data:getPerson>
+            <iin>{IIN}</iin>
+            <consentConfirmed>true</consentConfirmed>
+        </data:getPerson>
+    </soapenv:Body>
+</soapenv:Envelope>
