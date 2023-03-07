@@ -4,4 +4,4 @@ function sleep(ms) {
     });
 }
 
-module.exports.sleep = sleep
+module.exports.sleep = sleep;

@@ -1,19 +1,46 @@
+const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
+const https = require('https');
+
+axios.interceptors.request.use((request) => {
+    const authorizationHeader = `Basic ${Buffer.from(
+        `${process.env.AUTH_USERNAME}:${process.env.AUTH_PASSWORD}`
+    ).toString('base64')}`;
+
+    if (!('Authorization' in request.headers)) {
+        request.headers.Authorization = authorizationHeader;
+    }
+
+    return request;
+});
 
 const { BACKEND_URL, AUTH_USER_ID } = process.env;
 
 const userUrls = {
-    getUser: `${BACKEND_URL}/wsdl`
+    getUser: `${BACKEND_URL}`
 };
 
+const filePath = path.resolve(__dirname, '../assets/mock/request.xml');
+
 const xmlRequestTemplate = fs
-    .readFileSync('../assets/mock/request.xml', { encoding: 'utf8', flag: 'r' })
+    .readFileSync(filePath, { encoding: 'utf8', flag: 'r' })
     .replace(/{USER_ID}/g, AUTH_USER_ID);
 
 const fetchUserData = (iin) => {
     const xmlRequest = xmlRequestTemplate.replace('{IIN}', iin);
-    return axios.post(userUrls.getUser, xmlRequest).then((response) => response.data);
+    return axios
+        .post(userUrls.getUser, xmlRequest, {
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false
+            })
+        })
+        .then((response) => response.data);
 };
 
-module.exports.getUserData = fetchUserData;
+const responseMock = async (iin) => {
+    const responsePath = path.resolve(__dirname, '../assets/mock/response.xml');
+    return fs.readFileSync(responsePath, { encoding: 'utf8', flag: 'r' });
+};
+
+module.exports.getUserData = responseMock; // should write fetchUserData
