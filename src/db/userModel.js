@@ -84,32 +84,69 @@ const User = sequelize.define('User', {
     regAddressFlat: DataTypes.STRING,
     regAddressBeginDate: DataTypes.STRING,
     regAddressEndDate: DataTypes.STRING,
-    regAddressStatus: DataTypes.STRING,
-    regAddressInvalidity: DataTypes.STRING,
+
+    regAddressStatusCode: DataTypes.STRING,
+    regAddressStatusNameRu: DataTypes.STRING,
+    regAddressStatusNameKz: DataTypes.STRING,
+    regAddressStatusChangeDate: DataTypes.STRING,
+
+    regAddressInvalidityCode: DataTypes.STRING,
+    regAddressInvalidityNameRu: DataTypes.STRING,
+    regAddressInvalidityNameKz: DataTypes.STRING,
+    regAddressInvalidityChangeDate: DataTypes.STRING,
+
     regAddressArCode: DataTypes.STRING,
 
-    personCapableStatusCapableStatus: DataTypes.STRING,
+    personCapableStatusCapableStatusCode: DataTypes.STRING,
+    personCapableStatusCapableStatusNameRu: DataTypes.STRING,
+    personCapableStatusCapableStatusNameKz: DataTypes.STRING,
+    personCapableStatusCapableStatusChangeDate: DataTypes.STRING,
+
     personCapableStatusCapableDate: DataTypes.STRING,
     personCapableStatusCapableEndDate: DataTypes.STRING,
     personCapableStatusCapableNumber: DataTypes.STRING,
-    personCapableStatusCourt: DataTypes.STRING,
+
+    personCapableStatusCourtCode: DataTypes.STRING,
+    personCapableStatusCourtNameRu: DataTypes.STRING,
+    personCapableStatusCourtNameKz: DataTypes.STRING,
+    personCapableStatusCourtChangeDate: DataTypes.STRING,
 
     missingStatusMissing: DataTypes.STRING,
     missingStatusMissingDate: DataTypes.STRING,
     missingStatusMissingEndDate: DataTypes.STRING,
     missingStatusMissingNumber: DataTypes.STRING,
-    missingStatusGpTerritorial: DataTypes.STRING,
+
+    missingStatusGpTerritorialCode: DataTypes.STRING,
+    missingStatusGpTerritorialNameRu: DataTypes.STRING,
+    missingStatusGpTerritorialNameKz: DataTypes.STRING,
+    missingStatusGpTerritorialChangeDate: DataTypes.STRING,
 
     disappearStatusDisappear: DataTypes.STRING,
     disappearStatusDisappearDate: DataTypes.STRING,
     disappearStatusDisappearEndDate: DataTypes.STRING,
     disappearStatusDisappearNumber: DataTypes.STRING,
-    disappearStatusGpTerritorial: DataTypes.STRING,
 
-    excludeStatusExcludeReason: DataTypes.STRING,
-    excludeStatusExcludeReasonDate: DataTypes.STRING,
+    disappearStatusGpTerritorialCode: DataTypes.STRING,
+    disappearStatusGpTerritorialNameRu: DataTypes.STRING,
+    disappearStatusGpTerritorialNameKz: DataTypes.STRING,
+    disappearStatusGpTerritorialChangeDate: DataTypes.STRING,
+
+    excludeStatusExcludeReasonCode: DataTypes.STRING,
+    excludeStatusExcludeReasonNameRu: DataTypes.STRING,
+    excludeStatusExcludeReasonNameKz: DataTypes.STRING,
+    excludeStatusExcludeReasonChangeDate: DataTypes.STRING,
+
+    excludeStatusExcludeReasonDateCode: DataTypes.STRING,
+    excludeStatusExcludeReasonDateNameRu: DataTypes.STRING,
+    excludeStatusExcludeReasonDateNameKz: DataTypes.STRING,
+    excludeStatusExcludeReasonDateChangeDate: DataTypes.STRING,
+
     excludeStatusExcludeDate: DataTypes.STRING,
-    excludeStatusExcludeParticipant: DataTypes.STRING,
+
+    excludeStatusExcludeParticipantCode: DataTypes.STRING,
+    excludeStatusExcludeParticipantNameRu: DataTypes.STRING,
+    excludeStatusExcludeParticipantNameKz: DataTypes.STRING,
+    excludeStatusExcludeParticipantChangeDate: DataTypes.STRING,
 
     repatriationStatusRepatriationStatus: DataTypes.STRING,
     repatriationStatusRepatriationDate: DataTypes.STRING,

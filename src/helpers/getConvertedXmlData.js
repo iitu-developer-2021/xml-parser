@@ -1,15 +1,16 @@
 const { XMLParser } = require('fast-xml-parser');
 
 const parser = new XMLParser({
-    ignoreAttributes: false,
     numberParseOptions: {
         leadingZeros: false
+    },
+    isArray: (tagName) => {
+        return !!['address', 'document'].includes(tagName);
     }
 });
 
 const getConvertedXmlData = (responseXmlData) => {
     const convertedResponseObject = parser.parse(responseXmlData);
-
     const convertedResponseBody =
         convertedResponseObject['soap:Envelope']['soap:Body']['ns2:getPersonResponse'].return[
             'ns3:Person'
@@ -28,7 +29,9 @@ const getConvertedXmlData = (responseXmlData) => {
         };
     }
 
-    const responsePerson = convertedResponseBody.responseData.data.persons.person;
+    const responsePerson = Array.isArray(convertedResponseBody.responseData.data.persons.person)
+        ? convertedResponseBody.responseData.data.persons.person[0]
+        : convertedResponseBody.responseData.data.persons.person;
 
     return {
         success: true,
@@ -139,24 +142,58 @@ const getConvertedXmlData = (responseXmlData) => {
                 flat: responsePerson?.regAddress?.flat?.toString() || '',
                 beginDate: responsePerson?.regAddress?.beginDate?.toString() || '',
                 endDate: responsePerson?.regAddress?.endDate?.toString() || '',
-                status: responsePerson?.regAddress?.status?.toString() || '',
-                invalidity: responsePerson?.regAddress?.invalidity?.toString() || '',
+                status: {
+                    code: responsePerson?.regAddress?.status?.code?.toString() || '',
+                    nameRu: responsePerson?.regAddress?.status?.nameRu?.toString() || '',
+                    nameKz: responsePerson?.regAddress?.status?.nameKz?.toString() || '',
+                    changeDate: responsePerson?.regAddress?.status?.changeDate?.toString() || ''
+                },
+                invalidity: {
+                    code: responsePerson?.regAddress?.invalidity?.code?.toString() || '',
+                    nameRu: responsePerson?.regAddress?.invalidity?.nameRu?.toString() || '',
+                    nameKz: responsePerson?.regAddress?.invalidity?.nameKz?.toString() || '',
+                    changeDate: responsePerson?.regAddress?.invalidity?.changeDate?.toString() || ''
+                },
                 arCode: responsePerson?.regAddress?.arCode?.toString() || ''
             },
             personCapableStatus: {
-                capableStatus: responsePerson?.personCapableStatus?.capableStatus?.toString() || '',
+                capableStatus: {
+                    code:
+                        responsePerson?.personCapableStatus?.capableStatus?.code?.toString() || '',
+                    nameRu:
+                        responsePerson?.personCapableStatus?.capableStatus?.nameRu?.toString() ||
+                        '',
+                    nameKz:
+                        responsePerson?.personCapableStatus?.capableStatus?.nameKz?.toString() ||
+                        '',
+                    changeDate:
+                        responsePerson?.personCapableStatus?.capableStatus?.changeDate?.toString() ||
+                        ''
+                },
                 capableDate: responsePerson?.personCapableStatus?.capableDate?.toString() || '',
                 capableEndDate:
                     responsePerson?.personCapableStatus?.capableEndDate?.toString() || '',
                 capableNumber: responsePerson?.personCapableStatus?.capableNumber?.toString() || '',
-                court: responsePerson?.personCapableStatus?.court?.toString() || ''
+                court: {
+                    code: responsePerson?.personCapableStatus?.court?.code?.toString() || '',
+                    nameRu: responsePerson?.personCapableStatus?.court?.nameRu?.toString() || '',
+                    nameKz: responsePerson?.personCapableStatus?.court?.nameKz?.toString() || '',
+                    changeDate:
+                        responsePerson?.personCapableStatus?.court?.changeDate?.toString() || ''
+                }
             },
             missingStatus: {
                 missing: responsePerson?.missingStatus?.missing?.toString() || '',
                 missingDate: responsePerson?.missingStatus?.missingDate?.toString() || '',
                 missingEndDate: responsePerson?.missingStatus?.missingEndDate?.toString() || '',
                 missingNumber: responsePerson?.missingStatus?.missingNumber?.toString() || '',
-                gpTerritorial: responsePerson?.missingStatus?.gpTerritorial?.toString() || ''
+                gpTerritorial: {
+                    code: responsePerson?.missingStatus?.gpTerritorial?.code?.toString() || '',
+                    nameRu: responsePerson?.missingStatus?.gpTerritorial?.nameRu?.toString() || '',
+                    nameKz: responsePerson?.missingStatus?.gpTerritorial?.nameKz?.toString() || '',
+                    changeDate:
+                        responsePerson?.missingStatus?.gpTerritorial?.changeDate?.toString() || ''
+                }
             },
             disappearStatus: {
                 disappear: responsePerson?.disappearStatus?.disappear?.toString() || '',
@@ -164,15 +201,45 @@ const getConvertedXmlData = (responseXmlData) => {
                 disappearEndDate:
                     responsePerson?.disappearStatus?.disappearEndDate?.toString() || '',
                 disappearNumber: responsePerson?.disappearStatus?.disappearNumber?.toString() || '',
-                gpTerritorial: responsePerson?.disappearStatus?.gpTerritorial?.toString() || ''
+                gpTerritorial: {
+                    code: responsePerson?.disappearStatus?.gpTerritorial?.code?.toString() || '',
+                    nameRu:
+                        responsePerson?.disappearStatus?.gpTerritorial?.nameRu?.toString() || '',
+                    nameKz:
+                        responsePerson?.disappearStatus?.gpTerritorial?.nameKz?.toString() || '',
+                    changeDate:
+                        responsePerson?.disappearStatus?.gpTerritorial?.changeDate?.toString() || ''
+                }
             },
             excludeStatus: {
-                excludeReason: responsePerson?.excludeStatus?.excludeReason?.toString() || '',
-                excludeReasonDate:
-                    responsePerson?.excludeStatus?.excludeReasonDate?.toString() || '',
+                excludeReason: {
+                    code: responsePerson?.excludeStatus?.excludeReason?.code?.toString() || '',
+                    nameRu: responsePerson?.excludeStatus?.excludeReason?.nameRu?.toString() || '',
+                    nameKz: responsePerson?.excludeStatus?.excludeReason?.nameKz?.toString() || '',
+                    changeDate:
+                        responsePerson?.excludeStatus?.excludeReason?.changeDate?.toString() || ''
+                },
+                excludeReasonDate: {
+                    code: responsePerson?.excludeStatus?.excludeReasonDate?.code?.toString() || '',
+                    nameRu:
+                        responsePerson?.excludeStatus?.excludeReasonDate?.nameRu?.toString() || '',
+                    nameKz:
+                        responsePerson?.excludeStatus?.excludeReasonDate?.nameKz?.toString() || '',
+                    changeDate:
+                        responsePerson?.excludeStatus?.excludeReasonDate?.changeDate?.toString() ||
+                        ''
+                },
                 excludeDate: responsePerson?.excludeStatus?.excludeDate?.toString() || '',
-                excludeParticipant:
-                    responsePerson?.excludeStatus?.excludeParticipant?.toString() || ''
+                excludeParticipant: {
+                    code: responsePerson?.excludeStatus?.excludeParticipant?.code?.toString() || '',
+                    nameRu:
+                        responsePerson?.excludeStatus?.excludeParticipant?.nameRu?.toString() || '',
+                    nameKz:
+                        responsePerson?.excludeStatus?.excludeParticipant?.nameKz?.toString() || '',
+                    changeDate:
+                        responsePerson?.excludeStatus?.excludeParticipant?.changeDate?.toString() ||
+                        ''
+                }
             },
             repatriationStatus: {
                 repatriationStatus:
