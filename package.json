@@ -18,6 +18,7 @@
     "pg-hstore": "^2.3.4",
     "prompt-sync": "^4.2.0",
     "sequelize": "^6.29.0",
+    "xml-formatter": "^3.3.1",
     "xml2js": "^0.4.23",
     "xmlbuilder2": "^3.0.2"
   },

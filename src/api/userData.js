@@ -38,9 +38,4 @@ const fetchUserData = (iin) => {
         .then((response) => response.data);
 };
 
-const responseMock = async (iin) => {
-    const responsePath = path.resolve(__dirname, '../assets/mock/response.xml');
-    return fs.readFileSync(responsePath, { encoding: 'utf8', flag: 'r' });
-};
-
-module.exports.getUserData = responseMock; // should write fetchUserData
+module.exports.getUserData = fetchUserData;

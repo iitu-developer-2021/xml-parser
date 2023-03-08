@@ -15,16 +15,17 @@ const DB_CONFIG = {
 const sequelize = new Sequelize(DB_CONFIG.database, DB_CONFIG.username, DB_CONFIG.password, {
     host: DB_CONFIG.host,
     port: DB_CONFIG.port,
-    dialect: DB_CONFIG.dbType
+    dialect: DB_CONFIG.dbType,
+    logging: false
 });
 
-sequelize
-    .authenticate()
-    .then(() => {
-        console.log('Connection has been established successfully.');
-    })
-    .catch((error) => {
-        console.error('Unable to connect to the database:', error);
-    });
+// sequelize
+//     .authenticate()
+//     .then(() => {
+//         console.log('Connection has been established successfully.');
+//     })
+//     .catch((error) => {
+//         console.error('Unable to connect to the database:', error);
+//     });
 
 module.exports.sequelize = sequelize;

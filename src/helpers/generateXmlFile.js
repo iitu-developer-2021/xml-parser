@@ -1,8 +1,25 @@
 const fs = require('fs');
 const path = require('path');
 
-function generateXmlFile(iin, xmlContent) {
-    return fs.writeFileSync(path.resolve(__dirname, `../assets/xml/${iin}.xml`), xmlContent);
+function generateSuccessXmlFile(iin, xmlContent) {
+    fs.writeFile(path.resolve(__dirname, `../assets/xml/success/${iin}.xml`), xmlContent, (err) => {
+        if (err) {
+            console.error(`${iin}  - не удалось записать response в xml file`);
+        } else {
+            console.log(`${iin} - успешно записан в xml файл`);
+        }
+    });
 }
 
-module.exports.generateXmlFile = generateXmlFile;
+function generateFailedXmlFile(iin, xmlContent) {
+    fs.writeFile(path.resolve(__dirname, `../assets/xml/failed/${iin}.xml`), xmlContent, (err) => {
+        if (err) {
+            console.error(`${iin}- не удалось записать response в xml file`);
+        } else {
+            console.log(`${iin} - успешно записан в xml файл`);
+        }
+    });
+}
+
+module.exports.generateSuccessXmlFile = generateSuccessXmlFile;
+module.exports.generateFailedXmlFile = generateFailedXmlFile;

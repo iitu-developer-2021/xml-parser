@@ -7,8 +7,9 @@ const User = sequelize.define('User', {
     name: DataTypes.STRING,
     patronymic: DataTypes.STRING,
     engFirstName: DataTypes.STRING,
-    engSurname: DataTypes.STRING,
+    Surname: DataTypes.STRING,
     birthDate: DataTypes.STRING,
+    deathDate: DataTypes.STRING,
 
     genderCode: DataTypes.STRING,
     genderNameRu: DataTypes.STRING,
@@ -22,12 +23,21 @@ const User = sequelize.define('User', {
 
     citizenshipCode: DataTypes.STRING,
     citizenshipNameRu: DataTypes.STRING,
+    citizenshipNameKz: DataTypes.STRING,
     citizenshipChangeDate: DataTypes.STRING,
 
     lifeStatusCode: DataTypes.STRING,
     lifeStatusNameRu: DataTypes.STRING,
     lifeStatusNameKz: DataTypes.STRING,
     lifeStatusChangeDate: DataTypes.STRING,
+
+    birthCertificateNumber: DataTypes.STRING,
+    birthCertificateBeginDate: DataTypes.STRING,
+    birthCertificateIssueOrganisation: DataTypes.STRING,
+
+    deathCertificateNumber: DataTypes.STRING,
+    deathCertificateBeginDate: DataTypes.STRING,
+    deathCertificateIssueOrganisation: DataTypes.STRING,
 
     birthPlaceCountryCode: DataTypes.STRING,
     birthPlaceCountryNameRu: DataTypes.STRING,
@@ -44,10 +54,10 @@ const User = sequelize.define('User', {
     birthPlaceRegionNameKz: DataTypes.STRING,
     birthPlaceRegionChangeDate: DataTypes.STRING,
 
-    birthPlaceCityCode: DataTypes.STRING,
-    birthPlaceCityNameRu: DataTypes.STRING,
-    birthPlaceCityNameKz: DataTypes.STRING,
-    birthPlaceCityChangeDate: DataTypes.STRING,
+    birthPlaceForeignDataDistrictName: DataTypes.STRING,
+    birthPlaceForeignDataRegionName: DataTypes.STRING,
+    birthPlaceCity: DataTypes.STRING,
+    birthPlaceBirthTeCodeAR: DataTypes.STRING,
 
     regAddressCountryCode: DataTypes.STRING,
     regAddressCountryNameRu: DataTypes.STRING,
@@ -64,22 +74,51 @@ const User = sequelize.define('User', {
     regAddressRegionNameKz: DataTypes.STRING,
     regAddressRegionChangeDate: DataTypes.STRING,
 
+    regAddressForeignDataDistrictName: DataTypes.STRING,
+    regAddressForeignDataRegionName: DataTypes.STRING,
+
+    regAddressCity: DataTypes.STRING,
     regAddressStreet: DataTypes.STRING,
     regAddressBuilding: DataTypes.STRING,
+    regAddressCorpus: DataTypes.STRING,
     regAddressFlat: DataTypes.STRING,
     regAddressBeginDate: DataTypes.STRING,
+    regAddressEndDate: DataTypes.STRING,
+    regAddressStatus: DataTypes.STRING,
+    regAddressInvalidity: DataTypes.STRING,
+    regAddressArCode: DataTypes.STRING,
 
-    regAddressStatusCode: DataTypes.STRING,
-    regAddressStatusNameRu: DataTypes.STRING,
-    regAddressStatusNameKz: DataTypes.STRING,
-    regAddressStatusChangeDate: DataTypes.STRING,
+    personCapableStatusCapableStatus: DataTypes.STRING,
+    personCapableStatusCapableDate: DataTypes.STRING,
+    personCapableStatusCapableEndDate: DataTypes.STRING,
+    personCapableStatusCapableNumber: DataTypes.STRING,
+    personCapableStatusCourt: DataTypes.STRING,
 
-    regAddressInvalidityCode: DataTypes.STRING,
-    regAddressInvalidityNameRu: DataTypes.STRING,
-    regAddressInvalidityNameKz: DataTypes.STRING,
-    regAddressInvalidityChangeDate: DataTypes.STRING,
+    missingStatusMissing: DataTypes.STRING,
+    missingStatusMissingDate: DataTypes.STRING,
+    missingStatusMissingEndDate: DataTypes.STRING,
+    missingStatusMissingNumber: DataTypes.STRING,
+    missingStatusGpTerritorial: DataTypes.STRING,
 
-    regAddressArCode: DataTypes.STRING
+    disappearStatusDisappear: DataTypes.STRING,
+    disappearStatusDisappearDate: DataTypes.STRING,
+    disappearStatusDisappearEndDate: DataTypes.STRING,
+    disappearStatusDisappearNumber: DataTypes.STRING,
+    disappearStatusGpTerritorial: DataTypes.STRING,
+
+    excludeStatusExcludeReason: DataTypes.STRING,
+    excludeStatusExcludeReasonDate: DataTypes.STRING,
+    excludeStatusExcludeDate: DataTypes.STRING,
+    excludeStatusExcludeParticipant: DataTypes.STRING,
+
+    repatriationStatusRepatriationStatus: DataTypes.STRING,
+    repatriationStatusRepatriationDate: DataTypes.STRING,
+    repatriationStatusRepatriationEndDate: DataTypes.STRING,
+    repatriationStatusRepatriationNumber: DataTypes.STRING,
+    repatriationStatusRepatriationOrg: DataTypes.STRING,
+    repatriationStatusRepatriationReason: DataTypes.STRING,
+
+    removed: DataTypes.STRING
 });
 
 module.exports.User = User;
