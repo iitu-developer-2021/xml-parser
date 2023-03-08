@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const prompt = require('prompt-sync')();
-const { Op, DataTypes } = require('sequelize');
+const { Op } = require('sequelize');
 const xmlFormat = require('xml-formatter');
 const { LoginModel } = require('./src/db/loginModel');
 const { User } = require('./src/db/userModel');
@@ -31,14 +31,14 @@ async function handleResponse(response, iin, id) {
     const parsedXml = getConvertedXmlData(response.value);
 
     if (!parsedXml.success) {
-        generateFailedXmlFile(iin, xmlFormat(response.value), id);
+        generateFailedXmlFile(iin, xmlFormat(response.value));
         return console.error(
             `${iin} (id:${id}) (статус код: ${parsedXml.statusCode}) - сервер ответил с ОШИБКОЙ`
         );
     }
 
     if (parsedXml.success) {
-        generateSuccessXmlFile(iin, xmlFormat(response.value), id);
+        generateSuccessXmlFile(iin, xmlFormat(response.value));
         const { person } = parsedXml;
 
         const payload = {
