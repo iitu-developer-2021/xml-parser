@@ -2,6 +2,8 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+const fs = require('fs');
+const path = require('path');
 const prompt = require('prompt-sync')();
 const { Op } = require('sequelize');
 const xmlFormat = require('xml-formatter');
@@ -20,15 +22,14 @@ const {
 } = require('./src/helpers/loggers');
 const { withAsync } = require('./src/helpers/withAsync');
 const { generateFailedXmlFile, generateSuccessXmlFile } = require('./src/helpers/generateXmlFile');
+const { sleep } = require('./src/helpers/sleep');
 
 const startNumber = Number(prompt('Начало старта:'));
 const endNumber = Number(prompt('Конец старта:'));
 const period = Number(prompt('Периодичность:'));
 
 async function handleResponse(response, iin, id) {
-    if (response.status !== 'fulfilled') {
-        return writeDataError(`${iin} (id:${id}) - ответ от сервера ПРОВАЛЕНО`);
-    }
+    console.log(`${id} ${iin} handler started`);
 
     const parsedXml = getConvertedXmlData(response.value);
 
@@ -319,19 +320,37 @@ async function startParser(startNode) {
             }
         });
 
-        console.log('request started');
-        const loginRequests = loginTableData.map((loginData) => getUserData(loginData.iin.trim()));
-        const responses = await Promise.allSettled(loginRequests);
-        console.log('request ended');
+        loginTableData.forEach((loginTableItem) => {
+            const filePath = path.resolve(
+                __dirname,
+                `./src/assets/xml/success/${loginTableItem.iin}.xml`
+            );
 
-        await Promise.all([
-            responses.map((response, index) =>
-                handleResponse(response, loginTableData[index].iin, loginTableData[index].id)
-            )
-        ]);
+            fs.access(filePath, fs.F_OK, (err) => {
+                if (err) {
+                    return writeDataError(`Нет такого файла${filePath}`);
+                }
 
-        console.log(`request is handled successfully`);
+                fs.readFile(
+                    filePath,
+                    { encoding: 'utf8', flag: 'r' },
+                    async (readFileErr, data) => {
+                        if (readFileErr) {
+                            return writeDataError(`Ошибка при чтении файла${err}`);
+                        }
+                        console.log(`${loginTableItem.iin} - READ FROM FILE`);
+                        await handleResponse(
+                            { value: data },
+                            loginTableItem.iin,
+                            loginTableItem.id
+                        );
+                        console.log(`${loginTableItem.iin} - WRITE TO DB COMPLETED`);
+                    }
+                );
+            });
+        });
 
+        await sleep(100);
         startParser(startNode + period);
     } catch (e) {
         writeDataError(e.message);
