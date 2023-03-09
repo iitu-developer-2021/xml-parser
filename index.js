@@ -12,12 +12,14 @@ const { Document } = require('./src/db/documentModel');
 const { sequelize } = require('./src/db/index');
 const { getUserData } = require('./src/api/userData');
 const { getConvertedXmlData } = require('./src/helpers/getConvertedXmlData');
-const { initLogger } = require('./src/helpers/initLogger');
+const {
+    writeDataError,
+    writeUserDataSuccess,
+    writeUserAddressesSuccess,
+    writeUserDocumentsSuccess
+} = require('./src/helpers/loggers');
 const { withAsync } = require('./src/helpers/withAsync');
-const { sleep } = require('./src/helpers/sleep');
 const { generateFailedXmlFile, generateSuccessXmlFile } = require('./src/helpers/generateXmlFile');
-
-initLogger();
 
 const startNumber = Number(prompt('Начало старта:'));
 const endNumber = Number(prompt('Конец старта:'));
@@ -25,14 +27,14 @@ const period = Number(prompt('Периодичность:'));
 
 async function handleResponse(response, iin, id) {
     if (response.status !== 'fulfilled') {
-        return console.error(`${iin} (id:${id}) - ответ от сервера ПРОВАЛЕНО`);
+        return writeDataError(`${iin} (id:${id}) - ответ от сервера ПРОВАЛЕНО`);
     }
 
     const parsedXml = getConvertedXmlData(response.value);
 
     if (!parsedXml.success) {
         generateFailedXmlFile(iin, xmlFormat(response.value));
-        return console.error(
+        return writeDataError(
             `${iin} (id:${id}) (статус код: ${parsedXml.statusCode}) - сервер ответил с ОШИБКОЙ`
         );
     }
@@ -207,13 +209,13 @@ async function handleResponse(response, iin, id) {
         );
 
         if (isUserAddFailed) {
-            console.error(
+            writeDataError(
                 `${iin} (id:${id}) (статус код: ${parsedXml.statusCode}) - не удалось записать в БД, текст ошибки: ${isUserAddFailed.message}`
             );
         }
 
         if (isUserAddSuccess) {
-            console.log(
+            writeUserDataSuccess(
                 `${iin} (id:${id}) (статус код: ${parsedXml.statusCode}) - успешно записан в БД`
             );
         }
@@ -251,10 +253,10 @@ async function handleResponse(response, iin, id) {
             })
         )
             .then(() => {
-                console.log(`${iin} (id:${id} - ДОКУМЕНТS успешно записан в БД`);
+                writeUserDocumentsSuccess(`${iin} (id:${id} - ДОКУМЕНТЫ успешно записаны в БД`);
             })
             .catch((e) => {
-                console.error(
+                writeDataError(
                     `${iin} (id:${id}) - не удалось записать ДОКУМЕНТ в БД, текст ошибки: ${e.message}`
                 );
             });
@@ -294,13 +296,16 @@ async function handleResponse(response, iin, id) {
             })
         )
             .then(() => {
-                console.log(`${iin} (id:${id} - список АДРЕССОВ успешно записаны в БД`);
+                writeUserAddressesSuccess(
+                    `${iin} (id:${id} - список АДРЕССОВ успешно записаны в БД`
+                );
             })
             .catch((e) => {
-                console.error(
+                writeDataError(
                     `${iin} (id:${id}) - не удалось записать АДРЕСС в БД, текст ошибки: ${e.message}, документ тип: `
                 );
             });
+        console.log(`${iin} is handled successfully`);
     }
 }
 
@@ -331,7 +336,7 @@ async function startParser(startNode) {
 
         startParser(startNode + period);
     } catch (e) {
-        console.error(e.message);
+        writeDataError(e.message);
     }
 }
 

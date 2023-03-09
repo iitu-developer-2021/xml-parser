@@ -1,12 +1,13 @@
 const fs = require('fs');
 const path = require('path');
+const { writeDataError, writeUserXmlSuccess } = require('./loggers');
 
 function generateSuccessXmlFile(iin, xmlContent) {
     fs.writeFile(path.resolve(__dirname, `../assets/xml/success/${iin}.xml`), xmlContent, (err) => {
         if (err) {
-            console.error(`${iin}  - не удалось записать response в xml file`);
+            writeDataError(`${iin}  - не удалось записать response в xml file`);
         } else {
-            console.log(`${iin} - успешно записан в xml файл`);
+            writeUserXmlSuccess(`${iin} - успешно записан в xml файл`);
         }
     });
 }
@@ -14,9 +15,9 @@ function generateSuccessXmlFile(iin, xmlContent) {
 function generateFailedXmlFile(iin, xmlContent) {
     fs.writeFile(path.resolve(__dirname, `../assets/xml/failed/${iin}.xml`), xmlContent, (err) => {
         if (err) {
-            console.error(`${iin}- не удалось записать response в xml file`);
+            writeDataError(`${iin}- не удалось записать response в xml file`);
         } else {
-            console.log(`${iin} - успешно записан в xml файл`);
+            writeUserXmlSuccess(`${iin} - успешно записан в xml файл`);
         }
     });
 }
