@@ -27,7 +27,7 @@ const xmlRequestTemplate = fs
     .readFileSync(filePath, { encoding: 'utf8', flag: 'r' })
     .replace(/{USER_ID}/g, AUTH_USER_ID);
 
-const fetchUserData = (iin) => {
+const getUserData = (iin) => {
     const xmlRequest = xmlRequestTemplate.replace('{IIN}', iin);
     return axios
         .post(userUrls.getUser, xmlRequest, {
@@ -38,4 +38,4 @@ const fetchUserData = (iin) => {
         .then((response) => response.data);
 };
 
-module.exports.getUserData = fetchUserData;
+module.exports.getUserData = getUserData;

@@ -26,6 +26,8 @@ const endNumber = Number(prompt('Конец старта:'));
 const period = Number(prompt('Периодичность:'));
 
 async function handleResponse(response, iin, id) {
+    console.log(`${id} ${iin} handler started`);
+
     if (response.status !== 'fulfilled') {
         return writeDataError(`${iin} (id:${id}) - ответ от сервера ПРОВАЛЕНО`);
     }
@@ -220,8 +222,8 @@ async function handleResponse(response, iin, id) {
             );
         }
 
-        Promise.all(
-            person.documents.map((doc) => {
+        return Promise.all([
+            ...person.documents.map((doc) => {
                 return Document.create({
                     iin: person.iin,
                     typeCode: doc.type.code,
@@ -250,19 +252,8 @@ async function handleResponse(response, iin, id) {
                     patronymic: doc.patronymic,
                     birthDate: doc.birthDate
                 });
-            })
-        )
-            .then(() => {
-                writeUserDocumentsSuccess(`${iin} (id:${id} - ДОКУМЕНТЫ успешно записаны в БД`);
-            })
-            .catch((e) => {
-                writeDataError(
-                    `${iin} (id:${id}) - не удалось записать ДОКУМЕНТ в БД, текст ошибки: ${e.message}`
-                );
-            });
-
-        Promise.all(
-            person.addresses.map((add) => {
+            }),
+            ...person.addresses.map((add) => {
                 return Address.create({
                     iin: person.iin,
                     typeCode: add.type.code,
@@ -294,18 +285,21 @@ async function handleResponse(response, iin, id) {
                     arCode: add.arCode
                 });
             })
-        )
+        ])
             .then(() => {
                 writeUserAddressesSuccess(
-                    `${iin} (id:${id} - список АДРЕССОВ успешно записаны в БД`
+                    `${iin} id:${id} - список АДРЕССОВ успешно записаны в БД`
                 );
+                writeUserDocumentsSuccess(`${iin} id:${id} - ДОКУМЕНТЫ успешно записаны в БД`);
             })
             .catch((e) => {
                 writeDataError(
-                    `${iin} (id:${id}) - не удалось записать АДРЕСС в БД, текст ошибки: ${e.message}, документ тип: `
+                    `${iin} (id:${id}) - не удалось записать ДОКУМЕНТ в БД, текст ошибки: ${e.message}`
+                );
+                writeDataError(
+                    `${iin} (id:${id}) - не удалось записать АДРЕСС в БД, текст ошибки: ${e.message}`
                 );
             });
-        console.log(`${iin} is handled successfully`);
     }
 }
 
@@ -327,12 +321,18 @@ async function startParser(startNode) {
             }
         });
 
+        console.log('request started');
         const loginRequests = loginTableData.map((loginData) => getUserData(loginData.iin.trim()));
         const responses = await Promise.allSettled(loginRequests);
+        console.log('request ended');
 
-        responses.forEach((response, index) =>
-            handleResponse(response, loginTableData[index].iin, loginTableData[index].id)
-        );
+        await Promise.all([
+            responses.map((response, index) =>
+                handleResponse(response, loginTableData[index].iin, loginTableData[index].id)
+            )
+        ]);
+
+        console.log(`request is handled successfully`);
 
         startParser(startNode + period);
     } catch (e) {
