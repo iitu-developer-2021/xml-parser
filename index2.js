@@ -5,14 +5,10 @@ dotenv.config();
 const fs = require('fs');
 const path = require('path');
 const prompt = require('prompt-sync')();
-const { Op } = require('sequelize');
-const xmlFormat = require('xml-formatter');
-const { LoginModel } = require('./src/db/loginModel');
 const { User } = require('./src/db/userModel');
 const { Address } = require('./src/db/addressModel');
 const { Document } = require('./src/db/documentModel');
 const { sequelize } = require('./src/db/index');
-const { getUserData } = require('./src/api/userData');
 const { getConvertedXmlData } = require('./src/helpers/getConvertedXmlData');
 const {
     writeDataError,
@@ -24,24 +20,24 @@ const { withAsync } = require('./src/helpers/withAsync');
 const { generateFailedXmlFile, generateSuccessXmlFile } = require('./src/helpers/generateXmlFile');
 const { sleep } = require('./src/helpers/sleep');
 
+const files = fs.readdirSync('./src/assets/xml/success');
+
+console.log(files);
+
 const startNumber = Number(prompt('Начало старта:'));
-const endNumber = Number(prompt('Конец старта:'));
+const endNumber = files.length;
 const period = Number(prompt('Периодичность:'));
 
-async function handleResponse(response, iin, id) {
-    console.log(`${id} ${iin} handler started`);
-
+async function handleResponse(response, fileName) {
     const parsedXml = getConvertedXmlData(response.value);
 
     if (!parsedXml.success) {
-        generateFailedXmlFile(iin, xmlFormat(response.value));
         return writeDataError(
-            `${iin} (id:${id}) (статус код: ${parsedXml.statusCode}) - сервер ответил с ОШИБКОЙ`
+            `${fileName} (статус код: ${parsedXml.statusCode}) - сервер ответил с ОШИБКОЙ`
         );
     }
 
     if (parsedXml.success) {
-        generateSuccessXmlFile(iin, xmlFormat(response.value));
         const { person } = parsedXml;
 
         const payload = {
@@ -211,13 +207,13 @@ async function handleResponse(response, iin, id) {
 
         if (isUserAddFailed) {
             writeDataError(
-                `${iin} (id:${id}) (статус код: ${parsedXml.statusCode}) - не удалось записать в БД, текст ошибки: ${isUserAddFailed.message}`
+                `${fileName} (статус код: ${parsedXml.statusCode}) - не удалось записать в БД, текст ошибки: ${isUserAddFailed.message}`
             );
         }
 
         if (isUserAddSuccess) {
             writeUserDataSuccess(
-                `${iin} (id:${id}) (статус код: ${parsedXml.statusCode}) - успешно записан в БД`
+                `${fileName} (статус код: ${parsedXml.statusCode}) - успешно записан в БД`
             );
         }
 
@@ -286,17 +282,15 @@ async function handleResponse(response, iin, id) {
             })
         ])
             .then(() => {
-                writeUserAddressesSuccess(
-                    `${iin} id:${id} - список АДРЕССОВ успешно записаны в БД`
-                );
-                writeUserDocumentsSuccess(`${iin} id:${id} - ДОКУМЕНТЫ успешно записаны в БД`);
+                writeUserAddressesSuccess(`${fileName} - список АДРЕССОВ успешно записаны в БД`);
+                writeUserDocumentsSuccess(`${fileName} - ДОКУМЕНТЫ успешно записаны в БД`);
             })
             .catch((e) => {
                 writeDataError(
-                    `${iin} (id:${id}) - не удалось записать ДОКУМЕНТ в БД, текст ошибки: ${e.message}`
+                    `${fileName} - не удалось записать ДОКУМЕНТ в БД, текст ошибки: ${e.message}`
                 );
                 writeDataError(
-                    `${iin} (id:${id}) - не удалось записать АДРЕСС в БД, текст ошибки: ${e.message}`
+                    `${fileName} - не удалось записать АДРЕСС в БД, текст ошибки: ${e.message}`
                 );
             });
     }
@@ -312,20 +306,13 @@ async function startParser(startNode) {
             endNode = endNumber;
         }
 
-        const loginTableData = await LoginModel.findAll({
-            where: {
-                id: {
-                    [Op.between]: [startNode, endNode]
-                }
-            }
-        });
+        // eslint-disable-next-line no-plusplus
+        for (let i = startNode; i <= endNode; i++) {
+            const fileName = files[i];
+            const filePath = path.resolve(__dirname, `./src/assets/xml/success/${fileName}`);
+            console.log(filePath);
 
-        loginTableData.forEach((loginTableItem) => {
-            const filePath = path.resolve(
-                __dirname,
-                `./src/assets/xml/success/${loginTableItem.iin}.xml`
-            );
-
+            // eslint-disable-next-line no-loop-func
             fs.access(filePath, fs.F_OK, (err) => {
                 if (err) {
                     return writeDataError(`Нет такого файла${filePath}`);
@@ -338,17 +325,13 @@ async function startParser(startNode) {
                         if (readFileErr) {
                             return writeDataError(`Ошибка при чтении файла${err}`);
                         }
-                        console.log(`${loginTableItem.iin} - READ FROM FILE`);
-                        await handleResponse(
-                            { value: data },
-                            loginTableItem.iin,
-                            loginTableItem.id
-                        );
-                        console.log(`${loginTableItem.iin} - WRITE TO DB COMPLETED`);
+                        console.log(`${fileName} - READ FROM FILE`);
+                        await handleResponse({ value: data }, fileName);
+                        console.log(`${fileName} - WRITE TO DB COMPLETED`);
                     }
                 );
             });
-        });
+        }
 
         await sleep(100);
         startParser(startNode + period);
